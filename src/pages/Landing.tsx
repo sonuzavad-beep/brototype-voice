@@ -7,6 +7,7 @@ import { motion } from "framer-motion";
 import DisplayCards from "@/components/ui/display-cards";
 import { DottedSurface } from "@/components/ui/dotted-surface";
 import { CTASection } from "@/components/ui/cta-with-rectangle";
+import { AvatarCircles } from "@/components/ui/avatar-circles";
 
 export default function Landing() {
   const containerVariants = {
@@ -74,7 +75,7 @@ export default function Landing() {
 
             <motion.div 
               variants={itemVariants}
-              className="flex flex-col sm:flex-row gap-4 justify-center"
+              className="flex flex-col sm:flex-row gap-4 justify-center mb-10"
             >
               <Button size="lg" asChild className="hero-gradient text-lg h-14 px-10 hover:scale-105 transition-all shadow-lg hover:shadow-xl hover:shadow-primary/50">
                 <Link to="/student/dashboard">
@@ -85,6 +86,24 @@ export default function Landing() {
               <Button size="lg" variant="outline" asChild className="text-lg h-14 px-10 hover:scale-105 transition-all border-primary/30 hover:border-primary hover:bg-primary/5">
                 <Link to="/admin/dashboard">Admin Login</Link>
               </Button>
+            </motion.div>
+
+            <motion.div 
+              variants={itemVariants}
+              className="flex flex-col items-center gap-4"
+            >
+              <AvatarCircles 
+                numPeople={500} 
+                avatarUrls={[
+                  "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=100&h=100&fit=crop",
+                  "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&h=100&fit=crop",
+                  "https://images.unsplash.com/photo-1599566150163-29194dcaad36?w=100&h=100&fit=crop",
+                  "https://images.unsplash.com/photo-1527980965255-d3b416303d12?w=100&h=100&fit=crop",
+                ]}
+              />
+              <p className="text-sm text-muted-foreground">
+                Trusted by <span className="font-semibold text-primary">500+ students</span> at Brototype
+              </p>
             </motion.div>
           </motion.div>
         </div>
@@ -121,20 +140,20 @@ export default function Landing() {
             {[
               { 
                 number: "01", 
-                title: "Submit Your Complaint", 
-                desc: "Share detailed information about your concern through our easy-to-use form. Include all relevant details for faster resolution.", 
+                title: "Submit Complaint", 
+                desc: "File your complaint with detailed information and supporting evidence through our intuitive form", 
                 icon: PenTool 
               },
               { 
                 number: "02", 
-                title: "Track Progress", 
-                desc: "Monitor your complaint status in real-time with our transparent tracking system. Get updates at every stage.", 
+                title: "Admin Review", 
+                desc: "Our dedicated admin team promptly reviews your submission and assesses priority levels", 
                 icon: Eye 
               },
               { 
                 number: "03", 
-                title: "Get Resolution", 
-                desc: "Receive efficient solutions from our dedicated team. Your satisfaction is our priority.", 
+                title: "Get Updates", 
+                desc: "Receive timely responses and real-time status updates throughout the resolution process", 
                 icon: CheckCircle 
               },
             ].map((step, i) => (
@@ -142,7 +161,7 @@ export default function Landing() {
                 <div
                   className="group relative p-8 rounded-2xl bg-card border border-border hover:border-primary transition-all duration-300 hover:shadow-lg hover:-translate-y-1 h-full"
                 >
-                  <div className="absolute -top-6 -right-6 text-9xl font-bold text-primary/5 group-hover:text-primary/10 transition-colors">
+                  <div className="absolute -top-6 -right-6 text-9xl font-bold text-primary/50 group-hover:text-primary/60 transition-colors">
                     {step.number}
                   </div>
                   <div className="relative z-10">
