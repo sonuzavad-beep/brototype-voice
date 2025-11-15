@@ -57,7 +57,7 @@ function AppContent() {
       </Routes>
       
       {isAdminRoute && navigationType === "menubar" && <AdminDock />}
-      {isAdminRoute && <AdminMobileNav />}
+      {isAdminRoute && navigationType !== "menubar" && <AdminMobileNav />}
       {isStudentRoute && <StudentMobileNav />}
     </>
   );

@@ -62,13 +62,13 @@ export function DottedSurface({ className, ...props }: DottedSurfaceProps) {
         const y = 0;
         const z = iy * SEPARATION - (AMOUNTY * SEPARATION) / 2;
 
-        positions.push(x, y, z);
-        // Use theme colors
-        if (theme === 'dark') {
-          colors.push(147, 51, 234); // purple-600 in RGB
-        } else {
-          colors.push(79, 70, 229); // indigo-600 in RGB
-        }
+				positions.push(x, y, z);
+				// Use theme colors
+				if (theme === 'dark') {
+					colors.push(140, 140, 200); // Slightly blue tint for dark mode
+				} else {
+					colors.push(100, 100, 140); // Darker with blue tint for light mode
+				}
       }
     }
 
@@ -78,14 +78,14 @@ export function DottedSurface({ className, ...props }: DottedSurfaceProps) {
     );
     geometry.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3));
 
-    // Create material
-    const material = new THREE.PointsMaterial({
-      size: 8,
-      vertexColors: true,
-      transparent: true,
-      opacity: 0.6,
-      sizeAttenuation: true,
-    });
+		// Create material
+		const material = new THREE.PointsMaterial({
+			size: 8,
+			vertexColors: true,
+			transparent: true,
+			opacity: theme === 'dark' ? 0.6 : 0.4, // More subtle in both themes
+			sizeAttenuation: true,
+		});
 
     // Create points object
     const points = new THREE.Points(geometry, material);
@@ -116,8 +116,8 @@ export function DottedSurface({ className, ...props }: DottedSurfaceProps) {
 
       positionAttribute.needsUpdate = true;
 
-      renderer.render(scene, camera);
-      count += 0.1;
+			renderer.render(scene, camera);
+			count += 0.02; // Reduced from 0.1 to slow down animation
     };
 
     // Handle window resize
