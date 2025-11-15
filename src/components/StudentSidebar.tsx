@@ -2,11 +2,17 @@ import { Home, MessageSquare, List, User, LogOut, Menu } from "lucide-react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Button } from "./ui/button";
 import { useState } from "react";
+import { useStudentNavigation } from "@/contexts/StudentNavigationContext";
 
 export function StudentSidebar() {
   const location = useLocation();
   const navigate = useNavigate();
+  const { navigationType } = useStudentNavigation();
   const [isCollapsed, setIsCollapsed] = useState(false);
+
+  if (navigationType === "menubar") {
+    return null;
+  }
 
   const links = [
     { to: "/student/dashboard", icon: Home, label: "Dashboard" },
