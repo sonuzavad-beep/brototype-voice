@@ -5,7 +5,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Switch } from "@/components/ui/switch";
-import { User, Mail, Phone, MapPin, Building, Calendar, Settings, Camera, LogOut } from "lucide-react";
+import { Separator } from "@/components/ui/separator";
+import { User, Mail, Phone, MapPin, Building, Calendar, Settings, Camera, LogOut, AlertTriangle } from "lucide-react";
 import { useState } from "react";
 import { useAdminNavigation } from "@/contexts/AdminNavigationContext";
 import { useNavigate } from "react-router-dom";
@@ -41,30 +42,6 @@ export default function AdminProfile() {
           </div>
 
           <div className="grid gap-6">
-            <Card className="animate-fade-in">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Settings className="h-5 w-5" />
-                  Navigation Preferences
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="flex items-center justify-between">
-                  <div className="space-y-0.5">
-                    <Label htmlFor="navigation-mode">Use Bottom Navigation (Dock)</Label>
-                    <p className="text-sm text-muted-foreground">
-                      Switch between sidebar and bottom navigation bar
-                    </p>
-                  </div>
-                  <Switch
-                    id="navigation-mode"
-                    checked={useMenubar}
-                    onCheckedChange={handleNavigationToggle}
-                  />
-                </div>
-              </CardContent>
-            </Card>
-
             <Card className="animate-fade-in">
               <CardHeader>
                 <CardTitle>Personal Information</CardTitle>
@@ -108,7 +85,7 @@ export default function AdminProfile() {
                       <Mail className="h-4 w-4" />
                       Email
                     </Label>
-                    <Input id="email" type="email" defaultValue="admin@brototype.com" />
+                    <Input id="email" type="email" defaultValue="admin@example.com" />
                   </div>
 
                   <div>
@@ -116,15 +93,20 @@ export default function AdminProfile() {
                       <Phone className="h-4 w-4" />
                       Phone Number
                     </Label>
-                    <Input id="phone" type="tel" defaultValue="+91 1234567890" />
+                    <Input id="phone" type="tel" defaultValue="+91 9876543210" />
                   </div>
 
                   <div>
-                    <Label htmlFor="role" className="flex items-center gap-2">
+                    <Label htmlFor="role">Role</Label>
+                    <Input id="role" defaultValue="System Administrator" disabled />
+                  </div>
+
+                  <div>
+                    <Label htmlFor="department" className="flex items-center gap-2">
                       <Building className="h-4 w-4" />
-                      Role
+                      Department
                     </Label>
-                    <Input id="role" defaultValue="Administrator" disabled />
+                    <Input id="department" defaultValue="Administration" />
                   </div>
 
                   <div className="flex flex-col sm:flex-row gap-4">
@@ -137,51 +119,79 @@ export default function AdminProfile() {
 
             <Card className="animate-fade-in">
               <CardHeader>
-                <CardTitle>Change Password</CardTitle>
+                <CardTitle className="flex items-center gap-2">
+                  <Settings className="h-5 w-5" />
+                  Security Settings
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                <div>
+                  <h3 className="text-lg font-medium mb-4">Change Password</h3>
+                  <div className="grid gap-4">
+                    <div>
+                      <Label htmlFor="currentPassword">Current Password</Label>
+                      <Input id="currentPassword" type="password" />
+                    </div>
+                    <div>
+                      <Label htmlFor="newPassword">New Password</Label>
+                      <Input id="newPassword" type="password" />
+                    </div>
+                    <div>
+                      <Label htmlFor="confirmPassword">Confirm New Password</Label>
+                      <Input id="confirmPassword" type="password" />
+                    </div>
+                    <Button className="w-full sm:w-fit">Update Password</Button>
+                  </div>
+                </div>
+
+                <Separator />
+
+                <div>
+                  <h3 className="text-lg font-medium mb-4">Navigation Preferences</h3>
+                  <div className="flex items-center justify-between">
+                    <div className="space-y-0.5">
+                      <Label htmlFor="navigation-mode">Use Bottom Navigation (Dock)</Label>
+                      <p className="text-sm text-muted-foreground">
+                        Switch between sidebar and bottom navigation bar
+                      </p>
+                    </div>
+                    <Switch
+                      id="navigation-mode"
+                      checked={useMenubar}
+                      onCheckedChange={handleNavigationToggle}
+                    />
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card className="animate-fade-in border-destructive/50">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2 text-destructive">
+                  <AlertTriangle className="h-5 w-5" />
+                  Danger Zone
+                </CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="grid gap-4">
+                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                   <div>
-                    <Label htmlFor="currentPassword">Current Password</Label>
-                    <Input id="currentPassword" type="password" />
+                    <h3 className="font-semibold mb-1">Logout</h3>
+                    <p className="text-sm text-muted-foreground">
+                      Sign out of your account
+                    </p>
                   </div>
-                  <div>
-                    <Label htmlFor="newPassword">New Password</Label>
-                    <Input id="newPassword" type="password" />
-                  </div>
-                  <div>
-                    <Label htmlFor="confirmPassword">Confirm New Password</Label>
-                    <Input id="confirmPassword" type="password" />
-                  </div>
-                <Button className="w-full sm:w-fit">Update Password</Button>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card className="animate-fade-in border-destructive/50">
-            <CardHeader>
-              <CardTitle className="text-destructive">Danger Zone</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-                <div>
-                  <h3 className="font-semibold mb-1">Logout</h3>
-                  <p className="text-sm text-muted-foreground">
-                    Sign out of your account
-                  </p>
+                  <Button 
+                    variant="destructive" 
+                    className="w-full sm:w-auto"
+                    onClick={handleLogout}
+                  >
+                    <LogOut className="h-4 w-4 mr-2" />
+                    Logout
+                  </Button>
                 </div>
-                <Button 
-                  variant="destructive" 
-                  className="w-full sm:w-auto"
-                  onClick={handleLogout}
-                >
-                  <LogOut className="h-4 w-4 mr-2" />
-                  Logout
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
+              </CardContent>
+            </Card>
+          </div>
       </div>
     </main>
   </div>
