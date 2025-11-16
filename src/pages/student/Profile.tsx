@@ -13,6 +13,7 @@ import { useState } from "react";
 import { useStudentNavigation } from "@/contexts/StudentNavigationContext";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
+import { ThemeToggle } from "@/components/ThemeToggle";
 
 export default function StudentProfile() {
   const { navigationType, setNavigationType } = useStudentNavigation();
@@ -152,6 +153,21 @@ export default function StudentProfile() {
                       checked={useMenubar}
                       onCheckedChange={handleNavigationToggle}
                     />
+                  </div>
+                </div>
+
+                <Separator />
+
+                <div>
+                  <h3 className="text-lg font-medium mb-4">Appearance</h3>
+                  <div className="flex items-center justify-between">
+                    <div className="space-y-0.5">
+                      <Label>Theme</Label>
+                      <p className="text-sm text-muted-foreground">
+                        Toggle between light and dark mode
+                      </p>
+                    </div>
+                    <ThemeToggle />
                   </div>
                 </div>
               </CardContent>

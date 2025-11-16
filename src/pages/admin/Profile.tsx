@@ -1,4 +1,6 @@
 import { AdminSidebar } from "@/components/AdminSidebar";
+import { AdminDock } from "@/components/AdminDock";
+import { AdminMobileNav } from "@/components/AdminMobileNav";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -11,6 +13,7 @@ import { useState } from "react";
 import { useAdminNavigation } from "@/contexts/AdminNavigationContext";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
+import { ThemeToggle } from "@/components/ThemeToggle";
 
 export default function AdminProfile() {
   const { navigationType, setNavigationType } = useAdminNavigation();
@@ -33,8 +36,10 @@ export default function AdminProfile() {
   return (
     <div className="flex min-h-screen w-full">
       <AdminSidebar />
+      <AdminMobileNav />
+      <AdminDock />
 
-      <main className="flex-1 p-4 md:p-8 pb-24 md:pb-8">
+      <main className="flex-1 p-4 md:p-8 pb-24 md:pb-24">
         <div className="max-w-4xl mx-auto">
           <div className="mb-6 md:mb-8">
             <h1 className="text-2xl md:text-3xl font-bold mb-2">Profile Settings</h1>
@@ -160,6 +165,21 @@ export default function AdminProfile() {
                       checked={useMenubar}
                       onCheckedChange={handleNavigationToggle}
                     />
+                  </div>
+                </div>
+
+                <Separator />
+
+                <div>
+                  <h3 className="text-lg font-medium mb-4">Appearance</h3>
+                  <div className="flex items-center justify-between">
+                    <div className="space-y-0.5">
+                      <Label>Theme</Label>
+                      <p className="text-sm text-muted-foreground">
+                        Toggle between light and dark mode
+                      </p>
+                    </div>
+                    <ThemeToggle />
                   </div>
                 </div>
               </CardContent>

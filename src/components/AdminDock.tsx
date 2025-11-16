@@ -2,9 +2,11 @@ import { Link, useLocation } from "react-router-dom";
 import { LayoutDashboard, MessageSquare, BarChart3, Users, FolderTree, User } from "lucide-react";
 import { Dock, DockIcon, DockItem, DockLabel } from "@/components/ui/dock";
 import { ThemeToggle } from "./ThemeToggle";
+import { useAdminNavigation } from "@/contexts/AdminNavigationContext";
 
 export function AdminDock() {
   const location = useLocation();
+  const { navigationType } = useAdminNavigation();
   
   const dockItems = [
     { title: "Dashboard", icon: LayoutDashboard, href: "/admin/dashboard" },
@@ -14,6 +16,9 @@ export function AdminDock() {
     { title: "Categories", icon: FolderTree, href: "/admin/categories" },
     { title: "Profile", icon: User, href: "/admin/profile" },
   ];
+
+  // Only show dock when navigationType is "menubar" AND on desktop
+  if (navigationType !== "menubar") return null;
 
   return (
     <div className="fixed bottom-4 left-1/2 -translate-x-1/2 z-50 hidden md:block">
