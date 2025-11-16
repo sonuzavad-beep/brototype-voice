@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { StudentSidebar } from "@/components/StudentSidebar";
+import { StudentDock } from "@/components/StudentDock";
+import { StudentMobileNav } from "@/components/StudentMobileNav";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -50,10 +52,12 @@ export default function StudentComplaintDetail() {
   };
 
   return (
-    <div className="flex min-h-screen">
+    <div className="flex min-h-screen w-full">
       <StudentSidebar />
+      <StudentMobileNav />
+      <StudentDock />
 
-      <main className="flex-1 p-4 md:p-8 pb-24 md:pb-8">
+      <main className="flex-1 p-4 md:p-8 pb-24 md:pb-24">
         <div className="max-w-4xl mx-auto">
           <Button
             variant="ghost"

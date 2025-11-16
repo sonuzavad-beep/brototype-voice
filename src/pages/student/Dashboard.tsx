@@ -1,4 +1,6 @@
 import { StudentSidebar } from "@/components/StudentSidebar";
+import { StudentDock } from "@/components/StudentDock";
+import { StudentMobileNav } from "@/components/StudentMobileNav";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Plus, Clock, CheckCircle, AlertCircle } from "lucide-react";
@@ -19,23 +21,33 @@ export default function StudentDashboard() {
   ];
 
   return (
-    <div className="flex min-h-screen">
+    <div className="flex min-h-screen w-full">
       <StudentSidebar />
+      <StudentMobileNav />
+      <StudentDock />
 
-      <main className="flex-1 p-8">
-        <div className="max-w-7xl mx-auto">
-          <div className="flex justify-between items-center mb-8">
+      <main className="flex-1 p-4 md:p-8 pb-24 md:pb-24">
+        <div className="max-w-4xl mx-auto">
+          <div className="flex justify-between items-center mb-6 md:mb-8">
             <div>
-              <h1 className="text-3xl font-bold mb-2">Welcome Back, John!</h1>
-              <p className="text-muted-foreground">Here's your complaint overview</p>
+              <h1 className="text-2xl md:text-3xl font-bold mb-2">Welcome Back, John!</h1>
+              <p className="text-sm md:text-base text-muted-foreground">Here's your complaint overview</p>
             </div>
-            <Button asChild className="hero-gradient">
+            <Button asChild className="hero-gradient hidden md:flex">
               <Link to="/student/submit">
                 <Plus className="h-4 w-4 mr-2" />
                 New Complaint
               </Link>
             </Button>
           </div>
+
+          {/* Mobile New Complaint Button */}
+          <Button asChild className="hero-gradient w-full mb-6 md:hidden">
+            <Link to="/student/submit">
+              <Plus className="h-4 w-4 mr-2" />
+              New Complaint
+            </Link>
+          </Button>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
             {stats.map((stat) => (

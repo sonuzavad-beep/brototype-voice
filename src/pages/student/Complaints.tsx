@@ -1,4 +1,6 @@
 import { StudentSidebar } from "@/components/StudentSidebar";
+import { StudentDock } from "@/components/StudentDock";
+import { StudentMobileNav } from "@/components/StudentMobileNav";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -53,10 +55,12 @@ export default function StudentComplaints() {
   };
 
   return (
-    <div className="flex min-h-screen">
+    <div className="flex min-h-screen w-full">
       <StudentSidebar />
+      <StudentMobileNav />
+      <StudentDock />
 
-      <main className="flex-1 p-4 md:p-8 pb-24 md:pb-8">
+      <main className="flex-1 p-4 md:p-8 pb-24 md:pb-24">
         <div className="max-w-7xl mx-auto">
           <h1 className="text-2xl md:text-3xl font-bold mb-2">My Complaints</h1>
           <p className="text-muted-foreground mb-6 md:mb-8">View and track all your submitted complaints</p>

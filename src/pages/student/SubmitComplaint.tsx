@@ -1,5 +1,7 @@
 import { useState } from "react";
 import { StudentSidebar } from "@/components/StudentSidebar";
+import { StudentDock } from "@/components/StudentDock";
+import { StudentMobileNav } from "@/components/StudentMobileNav";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -26,10 +28,12 @@ export default function SubmitComplaint() {
   };
 
   return (
-    <div className="flex min-h-screen">
+    <div className="flex min-h-screen w-full">
       <StudentSidebar />
+      <StudentMobileNav />
+      <StudentDock />
 
-      <main className="flex-1 p-8">
+      <main className="flex-1 p-4 md:p-8 pb-24 md:pb-24">
         <div className="max-w-3xl mx-auto">
           <h1 className="text-3xl font-bold mb-2">Submit a Complaint</h1>
           <p className="text-muted-foreground mb-8">Fill out the form below to submit your complaint</p>
