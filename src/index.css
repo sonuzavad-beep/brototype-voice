@@ -51,6 +51,12 @@ All colors MUST be HSL.
     --hero-gradient-end: 0 72% 51%;
     --surface-light: 0 0% 98%;
     --surface-elevated: 0 0% 100%;
+
+    --chart-1: 217 91% 60%;
+    --chart-2: 217 76% 50%;
+    --chart-3: 217 100% 70%;
+    --chart-4: 217 60% 45%;
+    --chart-5: 217 85% 55%;
   }
 
   .dark {
@@ -95,6 +101,12 @@ All colors MUST be HSL.
     --hero-gradient-end: 0 72% 51%;
     --surface-light: 0 0% 9%;
     --surface-elevated: 0 0% 12%;
+
+    --chart-1: 217 91% 65%;
+    --chart-2: 217 76% 55%;
+    --chart-3: 217 100% 75%;
+    --chart-4: 217 60% 50%;
+    --chart-5: 217 85% 60%;
   }
 }
 

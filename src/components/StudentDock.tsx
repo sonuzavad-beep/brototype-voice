@@ -2,9 +2,11 @@ import { Link, useLocation } from "react-router-dom";
 import { LayoutDashboard, MessageSquare, PlusCircle, User } from "lucide-react";
 import { Dock, DockIcon, DockItem, DockLabel } from "@/components/ui/dock";
 import { ThemeToggle } from "./ThemeToggle";
+import { useStudentNavigation } from "@/contexts/StudentNavigationContext";
 
 export function StudentDock() {
   const location = useLocation();
+  const { navigationType } = useStudentNavigation();
   
   const dockItems = [
     { title: "Dashboard", icon: LayoutDashboard, href: "/student/dashboard" },
@@ -12,6 +14,9 @@ export function StudentDock() {
     { title: "Submit", icon: PlusCircle, href: "/student/submit" },
     { title: "Profile", icon: User, href: "/student/profile" },
   ];
+
+  // Only show dock when navigationType is "menubar" AND on desktop
+  if (navigationType !== "menubar") return null;
 
   return (
     <div className="fixed bottom-4 left-1/2 -translate-x-1/2 z-50 hidden md:block">
