@@ -6,9 +6,12 @@ import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import { ThemeProvider } from "./components/ThemeProvider";
 import { AdminNavigationProvider, useAdminNavigation } from "./contexts/AdminNavigationContext";
 import { StudentNavigationProvider } from "./contexts/StudentNavigationContext";
+import { AuthProvider } from "./contexts/AuthContext";
+import { ProtectedRoute } from "./components/ProtectedRoute";
 import { Navbar } from "./components/Navbar";
 import Landing from "./pages/Landing";
 import Login from "./pages/Login";
+import Auth from "./pages/Auth";
 import StudentDashboard from "./pages/student/Dashboard";
 import StudentComplaintDetail from "./pages/student/ComplaintDetail";
 import SubmitComplaint from "./pages/student/SubmitComplaint";
@@ -41,18 +44,24 @@ function AppContent() {
       <Routes>
         <Route path="/" element={<Landing />} />
         <Route path="/login" element={<Login />} />
-        <Route path="/student/dashboard" element={<StudentDashboard />} />
-        <Route path="/student/submit" element={<SubmitComplaint />} />
-        <Route path="/student/complaints" element={<StudentComplaints />} />
-        <Route path="/student/complaints/:id" element={<StudentComplaintDetail />} />
-        <Route path="/student/profile" element={<StudentProfile />} />
-        <Route path="/admin/dashboard" element={<AdminDashboard />} />
-        <Route path="/admin/complaints" element={<AdminComplaints />} />
-        <Route path="/admin/complaints/:id" element={<AdminComplaintDetail />} />
-        <Route path="/admin/analytics" element={<AdminAnalytics />} />
-        <Route path="/admin/users" element={<AdminUsers />} />
-        <Route path="/admin/categories" element={<AdminCategories />} />
-        <Route path="/admin/profile" element={<AdminProfile />} />
+        <Route path="/auth" element={<Auth />} />
+        
+        {/* Student Routes */}
+        <Route path="/student/dashboard" element={<ProtectedRoute requiredRole="student"><StudentDashboard /></ProtectedRoute>} />
+        <Route path="/student/submit" element={<ProtectedRoute requiredRole="student"><SubmitComplaint /></ProtectedRoute>} />
+        <Route path="/student/complaints" element={<ProtectedRoute requiredRole="student"><StudentComplaints /></ProtectedRoute>} />
+        <Route path="/student/complaints/:id" element={<ProtectedRoute requiredRole="student"><StudentComplaintDetail /></ProtectedRoute>} />
+        <Route path="/student/profile" element={<ProtectedRoute requiredRole="student"><StudentProfile /></ProtectedRoute>} />
+        
+        {/* Admin Routes */}
+        <Route path="/admin/dashboard" element={<ProtectedRoute requiredRole="admin"><AdminDashboard /></ProtectedRoute>} />
+        <Route path="/admin/complaints" element={<ProtectedRoute requiredRole="admin"><AdminComplaints /></ProtectedRoute>} />
+        <Route path="/admin/complaints/:id" element={<ProtectedRoute requiredRole="admin"><AdminComplaintDetail /></ProtectedRoute>} />
+        <Route path="/admin/analytics" element={<ProtectedRoute requiredRole="admin"><AdminAnalytics /></ProtectedRoute>} />
+        <Route path="/admin/users" element={<ProtectedRoute requiredRole="admin"><AdminUsers /></ProtectedRoute>} />
+        <Route path="/admin/categories" element={<ProtectedRoute requiredRole="admin"><AdminCategories /></ProtectedRoute>} />
+        <Route path="/admin/profile" element={<ProtectedRoute requiredRole="admin"><AdminProfile /></ProtectedRoute>} />
+        
         <Route path="*" element={<NotFound />} />
       </Routes>
       
@@ -70,11 +79,13 @@ const App = () => (
         <Toaster />
         <Sonner />
         <BrowserRouter>
-          <AdminNavigationProvider>
-            <StudentNavigationProvider>
-              <AppContent />
-            </StudentNavigationProvider>
-          </AdminNavigationProvider>
+          <AuthProvider>
+            <AdminNavigationProvider>
+              <StudentNavigationProvider>
+                <AppContent />
+              </StudentNavigationProvider>
+            </AdminNavigationProvider>
+          </AuthProvider>
         </BrowserRouter>
       </TooltipProvider>
     </ThemeProvider>

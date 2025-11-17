@@ -11,14 +11,45 @@ import { Separator } from "@/components/ui/separator";
 import { Camera, Settings, LogOut, AlertTriangle } from "lucide-react";
 import { useState } from "react";
 import { useStudentNavigation } from "@/contexts/StudentNavigationContext";
-import { useNavigate } from "react-router-dom";
+import { useAuth } from "@/contexts/AuthContext";
+import { useProfile } from "@/hooks/useProfile";
 import { toast } from "sonner";
 import { ThemeToggle } from "@/components/ThemeToggle";
 
 export default function StudentProfile() {
   const { navigationType, setNavigationType } = useStudentNavigation();
   const [useMenubar, setUseMenubar] = useState(navigationType === "menubar");
-  const navigate = useNavigate();
+  const { signOut, updatePassword } = useAuth();
+  const { profile, updateProfile, isUpdating } = useProfile();
+  
+  const [profileData, setProfileData] = useState({
+    first_name: "",
+    last_name: "",
+    email: "",
+    phone: "",
+    student_id: "",
+    batch: "",
+  });
+
+  const [passwordData, setPasswordData] = useState({
+    currentPassword: "",
+    newPassword: "",
+    confirmPassword: "",
+  });
+
+  // Update form when profile loads
+  useState(() => {
+    if (profile) {
+      setProfileData({
+        first_name: profile.first_name || "",
+        last_name: profile.last_name || "",
+        email: profile.email || "",
+        phone: profile.phone || "",
+        student_id: profile.student_id || "",
+        batch: profile.batch || "",
+      });
+    }
+  });
 
   const handleNavigationToggle = (checked: boolean) => {
     setUseMenubar(checked);
@@ -26,11 +57,37 @@ export default function StudentProfile() {
     toast.success(checked ? "Switched to bottom navigation" : "Switched to sidebar navigation");
   };
 
-  const handleLogout = () => {
-    toast.success("Logged out successfully");
-    setTimeout(() => {
-      navigate("/login");
-    }, 500);
+  const handleProfileUpdate = () => {
+    updateProfile(profileData);
+  };
+
+  const handlePasswordChange = async () => {
+    if (passwordData.newPassword !== passwordData.confirmPassword) {
+      toast.error("Passwords don't match");
+      return;
+    }
+
+    if (passwordData.newPassword.length < 8) {
+      toast.error("Password must be at least 8 characters");
+      return;
+    }
+
+    const { error } = await updatePassword(passwordData.currentPassword, passwordData.newPassword);
+    
+    if (!error) {
+      setPasswordData({
+        currentPassword: "",
+        newPassword: "",
+        confirmPassword: "",
+      });
+    }
+  };
+
+  const getInitials = () => {
+    if (profile?.first_name && profile?.last_name) {
+      return `${profile.first_name[0]}${profile.last_name[0]}`.toUpperCase();
+    }
+    return "U";
   };
 
   return (
