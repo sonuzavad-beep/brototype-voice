@@ -8,17 +8,43 @@ import { Label } from "@/components/ui/label";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Switch } from "@/components/ui/switch";
 import { Separator } from "@/components/ui/separator";
-import { User, Mail, Phone, MapPin, Building, Calendar, Settings, Camera, LogOut, AlertTriangle } from "lucide-react";
-import { useState } from "react";
+import { User, Mail, Phone, Settings, Camera, LogOut, AlertTriangle } from "lucide-react";
+import { useState, useEffect } from "react";
 import { useAdminNavigation } from "@/contexts/AdminNavigationContext";
-import { useNavigate } from "react-router-dom";
+import { useAuth } from "@/contexts/AuthContext";
+import { useProfile } from "@/hooks/useProfile";
 import { toast } from "sonner";
 import { ThemeToggle } from "@/components/ThemeToggle";
 
 export default function AdminProfile() {
   const { navigationType, setNavigationType } = useAdminNavigation();
   const [useMenubar, setUseMenubar] = useState(navigationType === "menubar");
-  const navigate = useNavigate();
+  const { signOut, updatePassword } = useAuth();
+  const { profile, updateProfile, isUpdating } = useProfile();
+
+  const [profileData, setProfileData] = useState({
+    first_name: "",
+    last_name: "",
+    email: "",
+    phone: "",
+  });
+
+  const [passwordData, setPasswordData] = useState({
+    currentPassword: "",
+    newPassword: "",
+    confirmPassword: "",
+  });
+
+  useEffect(() => {
+    if (profile) {
+      setProfileData({
+        first_name: profile.first_name || "",
+        last_name: profile.last_name || "",
+        email: profile.email || "",
+        phone: profile.phone || "",
+      });
+    }
+  }, [profile]);
 
   const handleNavigationToggle = (checked: boolean) => {
     setUseMenubar(checked);
@@ -26,11 +52,41 @@ export default function AdminProfile() {
     toast.success(checked ? "Switched to bottom navigation (dock)" : "Switched to sidebar navigation");
   };
 
-  const handleLogout = () => {
-    toast.success("Logged out successfully");
-    setTimeout(() => {
-      navigate("/login");
-    }, 500);
+  const handleProfileUpdate = () => {
+    updateProfile(profileData);
+  };
+
+  const handlePasswordChange = async () => {
+    if (passwordData.newPassword !== passwordData.confirmPassword) {
+      toast.error("Passwords don't match");
+      return;
+    }
+
+    if (passwordData.newPassword.length < 8) {
+      toast.error("Password must be at least 8 characters");
+      return;
+    }
+
+    const { error } = await updatePassword(passwordData.currentPassword, passwordData.newPassword);
+    
+    if (!error) {
+      setPasswordData({
+        currentPassword: "",
+        newPassword: "",
+        confirmPassword: "",
+      });
+    }
+  };
+
+  const handleLogout = async () => {
+    await signOut();
+  };
+
+  const getInitials = () => {
+    if (profile?.first_name && profile?.last_name) {
+      return `${profile.first_name[0]}${profile.last_name[0]}`.toUpperCase();
+    }
+    return "A";
   };
 
   return (
@@ -55,8 +111,8 @@ export default function AdminProfile() {
                 <div className="flex flex-col sm:flex-row items-start gap-6">
                   <div className="relative mx-auto sm:mx-0">
                     <Avatar className="h-24 w-24">
-                      <AvatarImage src="https://github.com/shadcn.png" />
-                      <AvatarFallback>AD</AvatarFallback>
+                      <AvatarImage src={profile?.avatar_url || "https://github.com/shadcn.png"} />
+                      <AvatarFallback>{getInitials()}</AvatarFallback>
                     </Avatar>
                     <Button size="icon" className="absolute bottom-0 right-0 h-8 w-8 rounded-full">
                       <Camera className="h-4 w-4" />
@@ -77,11 +133,19 @@ export default function AdminProfile() {
                         <User className="h-4 w-4" />
                         First Name
                       </Label>
-                      <Input id="firstName" defaultValue="Admin" />
+                      <Input 
+                        id="firstName" 
+                        value={profileData.first_name}
+                        onChange={(e) => setProfileData({ ...profileData, first_name: e.target.value })}
+                      />
                     </div>
                     <div>
                       <Label htmlFor="lastName">Last Name</Label>
-                      <Input id="lastName" defaultValue="User" />
+                      <Input 
+                        id="lastName" 
+                        value={profileData.last_name}
+                        onChange={(e) => setProfileData({ ...profileData, last_name: e.target.value })}
+                      />
                     </div>
                   </div>
 
@@ -90,7 +154,12 @@ export default function AdminProfile() {
                       <Mail className="h-4 w-4" />
                       Email
                     </Label>
-                    <Input id="email" type="email" defaultValue="admin@example.com" />
+                    <Input 
+                      id="email" 
+                      type="email"
+                      value={profileData.email}
+                      onChange={(e) => setProfileData({ ...profileData, email: e.target.value })}
+                    />
                   </div>
 
                   <div>
@@ -98,24 +167,22 @@ export default function AdminProfile() {
                       <Phone className="h-4 w-4" />
                       Phone Number
                     </Label>
-                    <Input id="phone" type="tel" defaultValue="+91 9876543210" />
-                  </div>
-
-                  <div>
-                    <Label htmlFor="role">Role</Label>
-                    <Input id="role" defaultValue="System Administrator" disabled />
-                  </div>
-
-                  <div>
-                    <Label htmlFor="department" className="flex items-center gap-2">
-                      <Building className="h-4 w-4" />
-                      Department
-                    </Label>
-                    <Input id="department" defaultValue="Administration" />
+                    <Input 
+                      id="phone" 
+                      type="tel"
+                      value={profileData.phone}
+                      onChange={(e) => setProfileData({ ...profileData, phone: e.target.value })}
+                    />
                   </div>
 
                   <div className="flex flex-col sm:flex-row gap-4">
-                    <Button className="hero-gradient w-full sm:w-auto">Save Changes</Button>
+                    <Button 
+                      className="hero-gradient w-full sm:w-auto"
+                      onClick={handleProfileUpdate}
+                      disabled={isUpdating}
+                    >
+                      {isUpdating ? "Saving..." : "Save Changes"}
+                    </Button>
                     <Button variant="outline" className="w-full sm:w-auto">Cancel</Button>
                   </div>
                 </div>
@@ -135,17 +202,37 @@ export default function AdminProfile() {
                   <div className="grid gap-4">
                     <div>
                       <Label htmlFor="currentPassword">Current Password</Label>
-                      <Input id="currentPassword" type="password" />
+                      <Input 
+                        id="currentPassword" 
+                        type="password"
+                        value={passwordData.currentPassword}
+                        onChange={(e) => setPasswordData({ ...passwordData, currentPassword: e.target.value })}
+                      />
                     </div>
                     <div>
                       <Label htmlFor="newPassword">New Password</Label>
-                      <Input id="newPassword" type="password" />
+                      <Input 
+                        id="newPassword" 
+                        type="password"
+                        value={passwordData.newPassword}
+                        onChange={(e) => setPasswordData({ ...passwordData, newPassword: e.target.value })}
+                      />
                     </div>
                     <div>
                       <Label htmlFor="confirmPassword">Confirm New Password</Label>
-                      <Input id="confirmPassword" type="password" />
+                      <Input 
+                        id="confirmPassword" 
+                        type="password"
+                        value={passwordData.confirmPassword}
+                        onChange={(e) => setPasswordData({ ...passwordData, confirmPassword: e.target.value })}
+                      />
                     </div>
-                    <Button className="w-full sm:w-fit">Update Password</Button>
+                    <Button 
+                      className="w-full sm:w-fit"
+                      onClick={handlePasswordChange}
+                    >
+                      Update Password
+                    </Button>
                   </div>
                 </div>
 
