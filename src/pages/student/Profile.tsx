@@ -83,6 +83,10 @@ export default function StudentProfile() {
     }
   };
 
+  const handleLogout = async () => {
+    await signOut();
+  };
+
   const getInitials = () => {
     if (profile?.first_name && profile?.last_name) {
       return `${profile.first_name[0]}${profile.last_name[0]}`.toUpperCase();
@@ -112,8 +116,8 @@ export default function StudentProfile() {
                 <div className="flex flex-col sm:flex-row items-start gap-6">
                   <div className="relative mx-auto sm:mx-0">
                     <Avatar className="h-24 w-24">
-                      <AvatarImage src="https://github.com/shadcn.png" />
-                      <AvatarFallback>JD</AvatarFallback>
+                      <AvatarImage src={profile?.avatar_url || "https://github.com/shadcn.png"} />
+                      <AvatarFallback>{getInitials()}</AvatarFallback>
                     </Avatar>
                     <Button size="icon" className="absolute bottom-0 right-0 h-8 w-8 rounded-full">
                       <Camera className="h-4 w-4" />
@@ -131,36 +135,60 @@ export default function StudentProfile() {
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
                       <Label htmlFor="firstName">First Name</Label>
-                      <Input id="firstName" defaultValue="John" />
+                      <Input 
+                        id="firstName" 
+                        value={profileData.first_name}
+                        onChange={(e) => setProfileData({ ...profileData, first_name: e.target.value })}
+                      />
                     </div>
                     <div>
                       <Label htmlFor="lastName">Last Name</Label>
-                      <Input id="lastName" defaultValue="Doe" />
+                      <Input 
+                        id="lastName" 
+                        value={profileData.last_name}
+                        onChange={(e) => setProfileData({ ...profileData, last_name: e.target.value })}
+                      />
                     </div>
                   </div>
 
                   <div>
                     <Label htmlFor="email">Email</Label>
-                    <Input id="email" type="email" defaultValue="john.doe@brototype.com" />
+                    <Input 
+                      id="email" 
+                      type="email" 
+                      value={profileData.email}
+                      onChange={(e) => setProfileData({ ...profileData, email: e.target.value })}
+                    />
                   </div>
 
                   <div>
                     <Label htmlFor="phone">Phone Number</Label>
-                    <Input id="phone" type="tel" defaultValue="+91 9876543210" />
+                    <Input 
+                      id="phone" 
+                      type="tel" 
+                      value={profileData.phone}
+                      onChange={(e) => setProfileData({ ...profileData, phone: e.target.value })}
+                    />
                   </div>
 
                   <div>
                     <Label htmlFor="studentId">Student ID</Label>
-                    <Input id="studentId" defaultValue="BT2024001" disabled />
+                    <Input id="studentId" value={profileData.student_id} disabled />
                   </div>
 
                   <div>
                     <Label htmlFor="batch">Batch</Label>
-                    <Input id="batch" defaultValue="MERN Stack - 2024" disabled />
+                    <Input id="batch" value={profileData.batch} disabled />
                   </div>
 
                   <div className="flex flex-col sm:flex-row gap-4">
-                    <Button className="hero-gradient w-full sm:w-auto">Save Changes</Button>
+                    <Button 
+                      className="hero-gradient w-full sm:w-auto"
+                      onClick={handleProfileUpdate}
+                      disabled={isUpdating}
+                    >
+                      {isUpdating ? "Saving..." : "Save Changes"}
+                    </Button>
                     <Button variant="outline" className="w-full sm:w-auto">Cancel</Button>
                   </div>
                 </div>
@@ -180,17 +208,37 @@ export default function StudentProfile() {
                   <div className="grid gap-4">
                     <div>
                       <Label htmlFor="currentPassword">Current Password</Label>
-                      <Input id="currentPassword" type="password" />
+                      <Input 
+                        id="currentPassword" 
+                        type="password"
+                        value={passwordData.currentPassword}
+                        onChange={(e) => setPasswordData({ ...passwordData, currentPassword: e.target.value })}
+                      />
                     </div>
                     <div>
                       <Label htmlFor="newPassword">New Password</Label>
-                      <Input id="newPassword" type="password" />
+                      <Input 
+                        id="newPassword" 
+                        type="password"
+                        value={passwordData.newPassword}
+                        onChange={(e) => setPasswordData({ ...passwordData, newPassword: e.target.value })}
+                      />
                     </div>
                     <div>
                       <Label htmlFor="confirmPassword">Confirm New Password</Label>
-                      <Input id="confirmPassword" type="password" />
+                      <Input 
+                        id="confirmPassword" 
+                        type="password"
+                        value={passwordData.confirmPassword}
+                        onChange={(e) => setPasswordData({ ...passwordData, confirmPassword: e.target.value })}
+                      />
                     </div>
-                    <Button className="w-full sm:w-fit">Update Password</Button>
+                    <Button 
+                      className="w-full sm:w-fit"
+                      onClick={handlePasswordChange}
+                    >
+                      Update Password
+                    </Button>
                   </div>
                 </div>
 
