@@ -8,23 +8,43 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { useToast } from "@/hooks/use-toast";
 import { useNavigate } from "react-router-dom";
+import { useComplaints } from "@/hooks/useComplaints";
+import { useCategories } from "@/hooks/useCategories";
+import { toast } from "sonner";
 
 export default function SubmitComplaint() {
-  const { toast } = useToast();
   const navigate = useNavigate();
+  const { createComplaint, isCreating } = useComplaints();
+  const { categories } = useCategories();
   const [title, setTitle] = useState("");
-  const [category, setCategory] = useState("");
+  const [categoryId, setCategoryId] = useState("");
   const [description, setDescription] = useState("");
+  const [priority, setPriority] = useState<"low" | "medium" | "high">("medium");
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    toast({
-      title: "Complaint Submitted",
-      description: "Your complaint has been submitted successfully!",
-    });
-    navigate("/student/complaints");
+    
+    if (!categoryId) {
+      toast.error("Please select a category");
+      return;
+    }
+
+    createComplaint(
+      {
+        title,
+        category_id: categoryId,
+        description,
+        priority,
+        status: "pending",
+      },
+      {
+        onSuccess: () => {
+          toast.success("Complaint submitted successfully!");
+          navigate("/student/complaints");
+        },
+      }
+    );
   };
 
   return (
@@ -53,16 +73,30 @@ export default function SubmitComplaint() {
 
               <div>
                 <Label htmlFor="category">Category</Label>
-                <Select value={category} onValueChange={setCategory} required>
+                <Select value={categoryId} onValueChange={setCategoryId} required>
                   <SelectTrigger>
                     <SelectValue placeholder="Select a category" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="infrastructure">Infrastructure</SelectItem>
-                    <SelectItem value="mentorship">Mentorship</SelectItem>
-                    <SelectItem value="technical">Technical Issues</SelectItem>
-                    <SelectItem value="administrative">Administrative</SelectItem>
-                    <SelectItem value="other">Other</SelectItem>
+                    {categories?.map((cat) => (
+                      <SelectItem key={cat.id} value={cat.id}>
+                        {cat.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div>
+                <Label htmlFor="priority">Priority</Label>
+                <Select value={priority} onValueChange={(value: any) => setPriority(value)} required>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select priority" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="low">Low</SelectItem>
+                    <SelectItem value="medium">Medium</SelectItem>
+                    <SelectItem value="high">High</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -79,14 +113,9 @@ export default function SubmitComplaint() {
                 />
               </div>
 
-              <div>
-                <Label htmlFor="attachment">Attachment (Optional)</Label>
-                <Input id="attachment" type="file" />
-              </div>
-
               <div className="flex gap-4">
-                <Button type="submit" className="hero-gradient flex-1">
-                  Submit Complaint
+                <Button type="submit" className="hero-gradient flex-1" disabled={isCreating}>
+                  {isCreating ? "Submitting..." : "Submit Complaint"}
                 </Button>
                 <Button type="button" variant="outline" onClick={() => navigate("/student/dashboard")}>
                   Cancel
