@@ -11,7 +11,6 @@ import { ProtectedRoute } from "./components/ProtectedRoute";
 import { Navbar } from "./components/Navbar";
 import Landing from "./pages/Landing";
 import Login from "./pages/Login";
-import Auth from "./pages/Auth";
 import StudentDashboard from "./pages/student/Dashboard";
 import StudentComplaintDetail from "./pages/student/ComplaintDetail";
 import SubmitComplaint from "./pages/student/SubmitComplaint";
@@ -44,7 +43,6 @@ function AppContent() {
       <Routes>
         <Route path="/" element={<Landing />} />
         <Route path="/login" element={<Login />} />
-        <Route path="/auth" element={<Auth />} />
         
         {/* Student Routes */}
         <Route path="/student/dashboard" element={<ProtectedRoute requiredRole="student"><StudentDashboard /></ProtectedRoute>} />
