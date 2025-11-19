@@ -93,12 +93,11 @@ export function useComplaint(id: string) {
         .from("complaints")
         .select(`
           *,
-          category:categories(name, icon, description),
-          user:profiles!complaints_user_id_fkey(first_name, last_name, email, phone, student_id),
-          admin:profiles!complaints_admin_id_fkey(first_name, last_name, email)
+          categories(name, icon, description),
+          profiles!inner(first_name, last_name, email, phone, student_id)
         `)
         .eq("id", id)
-        .single();
+        .maybeSingle();
 
       if (error) throw error;
       return data;
