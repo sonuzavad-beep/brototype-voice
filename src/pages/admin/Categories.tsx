@@ -5,30 +5,88 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 import { Plus, Search, Edit, Trash2, FolderKanban } from "lucide-react";
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { useCategories } from "@/hooks/useCategories";
+import { useComplaints } from "@/hooks/useComplaints";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 export default function AdminCategories() {
   const isMobile = useIsMobile();
+  const { categories, isLoading, createCategory, deleteCategory, isCreating, isDeleting } = useCategories();
+  const { complaints } = useComplaints();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [categoryName, setCategoryName] = useState("");
-  const [categoryColor, setCategoryColor] = useState("blue");
-  
-  const categories = [
-    { id: 1, name: "Infrastructure", count: 12, color: "blue" },
-    { id: 2, name: "Mentorship", count: 8, color: "purple" },
-    { id: 3, name: "Technical Issues", count: 15, color: "red" },
-    { id: 4, name: "Administrative", count: 6, color: "green" },
-    { id: 5, name: "Other", count: 7, color: "gray" },
-  ];
+  const [categoryDescription, setCategoryDescription] = useState("");
+  const [categoryIcon, setCategoryIcon] = useState("FolderKanban");
+  const [searchQuery, setSearchQuery] = useState("");
+  const [deleteId, setDeleteId] = useState<string | null>(null);
+
+  const categoryStats = useMemo(() => {
+    if (!categories || !complaints) return [];
+    
+    return categories.map(category => {
+      const count = complaints.filter(c => c.category_id === category.id).length;
+      return {
+        ...category,
+        count,
+      };
+    });
+  }, [categories, complaints]);
+
+  const filteredCategories = useMemo(() => {
+    if (!categoryStats) return [];
+    
+    return categoryStats.filter(category =>
+      category.name.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+  }, [categoryStats, searchQuery]);
+
+  const totalComplaints = useMemo(() => {
+    return complaints?.length || 0;
+  }, [complaints]);
 
   const handleAddCategory = () => {
-    console.log("Adding category:", { categoryName, categoryColor });
+    if (!categoryName.trim()) return;
+    
+    createCategory({
+      name: categoryName.trim(),
+      description: categoryDescription.trim() || null,
+      icon: categoryIcon,
+    });
+    
     setIsDialogOpen(false);
     setCategoryName("");
-    setCategoryColor("blue");
+    setCategoryDescription("");
+    setCategoryIcon("FolderKanban");
   };
+
+  const handleDeleteCategory = (id: string) => {
+    deleteCategory(id);
+    setDeleteId(null);
+  };
+
+  if (isLoading) {
+    return (
+      <div className="flex min-h-screen w-full">
+        <AdminSidebar />
+        <main className="flex-1 flex items-center justify-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+        </main>
+      </div>
+    );
+  }
 
   return (
     <div className="flex min-h-screen w-full">
@@ -66,43 +124,57 @@ export default function AdminCategories() {
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="categoryColor">Color Theme</Label>
+                    <Label htmlFor="categoryDescription">Description (Optional)</Label>
+                    <Textarea
+                      id="categoryDescription"
+                      placeholder="Brief description of this category"
+                      value={categoryDescription}
+                      onChange={(e) => setCategoryDescription(e.target.value)}
+                      rows={3}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="categoryIcon">Icon</Label>
                     <select
-                      id="categoryColor"
-                      value={categoryColor}
-                      onChange={(e) => setCategoryColor(e.target.value)}
+                      id="categoryIcon"
+                      value={categoryIcon}
+                      onChange={(e) => setCategoryIcon(e.target.value)}
                       className="w-full h-10 px-3 py-2 rounded-md border border-input bg-background"
                     >
-                      <option value="blue">Blue</option>
-                      <option value="purple">Purple</option>
-                      <option value="red">Red</option>
-                      <option value="green">Green</option>
-                      <option value="gray">Gray</option>
+                      <option value="FolderKanban">FolderKanban</option>
+                      <option value="Settings">Settings</option>
+                      <option value="Wrench">Wrench</option>
+                      <option value="Users">Users</option>
+                      <option value="BookOpen">BookOpen</option>
                     </select>
                   </div>
                   <Button 
                     onClick={handleAddCategory} 
                     className="w-full hero-gradient"
-                    disabled={!categoryName}
+                    disabled={!categoryName.trim() || isCreating}
                   >
-                    Create Category
+                    {isCreating ? "Creating..." : "Create Category"}
                   </Button>
                 </div>
               </DialogContent>
             </Dialog>
           </div>
 
-          <Card className="p-4 md:p-6">
-            <div className="flex items-center gap-4 mb-6">
-              <div className="relative flex-1">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                <Input placeholder="Search categories..." className="pl-10" />
-              </div>
+          <Card className="p-4 md:p-6 mb-6">
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
+              <Input
+                placeholder="Search categories..."
+                className="pl-10"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+              />
             </div>
+          </Card>
 
-            {isMobile ? (
-              <div className="space-y-3">
-                {categories.map((category) => (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+            {filteredCategories.length > 0 ? (
+              filteredCategories.map((category) => (
                   <Card key={category.id} className="p-4 hover:border-primary transition-colors animate-fade-in">
                     <div className="flex items-start justify-between mb-3">
                       <div className="flex-1">
