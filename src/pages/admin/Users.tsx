@@ -1,36 +1,46 @@
 import { AdminSidebar } from "@/components/AdminSidebar";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { Label } from "@/components/ui/label";
-import { Search, UserPlus, MoreVertical, Mail, User as UserIcon, GraduationCap } from "lucide-react";
-import { useState } from "react";
+import { Search, Mail, User as UserIcon, GraduationCap } from "lucide-react";
+import { useState, useMemo } from "react";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { useUsers } from "@/hooks/useUsers";
 
 export default function AdminUsers() {
   const isMobile = useIsMobile();
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [userName, setUserName] = useState("");
-  const [userEmail, setUserEmail] = useState("");
-  const [userBatch, setUserBatch] = useState("");
-  
-  const users = [
-    { id: 1, name: "John Doe", email: "john@brototype.com", role: "Student", batch: "MERN 2024", status: "active" },
-    { id: 2, name: "Jane Smith", email: "jane@brototype.com", role: "Student", batch: "MERN 2024", status: "active" },
-    { id: 3, name: "Mike Johnson", email: "mike@brototype.com", role: "Student", batch: "Python 2024", status: "active" },
-    { id: 4, name: "Sarah Williams", email: "sarah@brototype.com", role: "Student", batch: "MERN 2024", status: "inactive" },
-  ];
+  const { users, isLoading } = useUsers();
+  const [searchQuery, setSearchQuery] = useState("");
 
-  const handleAddUser = () => {
-    console.log("Adding user:", { userName, userEmail, userBatch });
-    setIsDialogOpen(false);
-    setUserName("");
-    setUserEmail("");
-    setUserBatch("");
+  const filteredUsers = useMemo(() => {
+    if (!users) return [];
+    
+    return users.filter(user => {
+      const searchLower = searchQuery.toLowerCase();
+      const fullName = `${user.first_name || ""} ${user.last_name || ""}`.toLowerCase();
+      const email = (user.email || "").toLowerCase();
+      
+      return fullName.includes(searchLower) || email.includes(searchLower);
+    });
+  }, [users, searchQuery]);
+
+  const getInitials = (firstName?: string | null, lastName?: string | null) => {
+    const first = firstName?.[0] || "";
+    const last = lastName?.[0] || "";
+    return (first + last).toUpperCase() || "U";
   };
+
+  if (isLoading) {
+    return (
+      <div className="flex min-h-screen w-full">
+        <AdminSidebar />
+        <main className="flex-1 flex items-center justify-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+        </main>
+      </div>
+    );
+  }
 
   return (
     <div className="flex min-h-screen w-full">
